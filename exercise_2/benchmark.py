@@ -3,7 +3,7 @@ import time
 import csv
 from multiprocessing import cpu_count
 
-from serial import process_image
+from serial import load_model, process_image
 from parallel import parallel_process_images
 
 
@@ -24,11 +24,12 @@ def benchmark(image_paths, workers_list):
     """
     results = []
 
-    # serial benchmark
+    # serial benchmark — model loaded once and reused across all images
     print("Running serial pipeline...")
+    model = load_model()
     start = time.perf_counter()
     for path in image_paths:
-        process_image(path)
+        process_image(path, model)
     serial_time = time.perf_counter() - start
     print(f"  serial  time={serial_time:.4f}s")
     results.append({
@@ -76,14 +77,15 @@ def save_results(records, path="benchmark_results.csv"):
 
 if __name__ == "__main__":
     image_dir = "data/DIC-C2DH-HeLa/01"
-    image_paths = sorted([
+    all_paths = sorted([
         os.path.join(image_dir, f)
         for f in os.listdir(image_dir)
         if f.endswith(".tif")
     ])
+    image_paths = all_paths[:10]
 
     print(f"Available CPU cores: {cpu_count()}")
-    print(f"Found {len(image_paths)} images\n")
+    print(f"Found {len(all_paths)} images (benchmarking first {len(image_paths)})\n")
 
     # test with increasing number of workers
     workers_list = [2, 4, 8]
