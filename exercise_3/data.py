@@ -10,8 +10,8 @@ API_KEY = os.getenv("FIRMS_API_KEY")
 # selected because it has documented fire activity during dry season
 AREA = "-91.5,17.5,-87.5,21.5"  # min_lon, min_lat, max_lon, max_lat
 DATE = "2024-04-01"
-DAYS = "10"
-SENSOR = "VIIRS_SNPP_NRT"
+DAYS = "5"
+SENSOR = "VIIRS_SNPP_SP"
 
 
 def fetch_hotspots(api_key, area, date, days, sensor):
