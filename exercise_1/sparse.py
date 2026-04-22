@@ -139,14 +139,8 @@ def save_results(records, path="sparse_results.csv"):
 
 
 if __name__ == "__main__":
-    # Download two matrices from https://sparse.tamu.edu/
-    # Recommended matrices for this experiment:
-    #   - HB/west0067   (small, good for testing)
-    #   - SNAP/email-EuAll (medium, real-world sparsity)
-    # Place the .mtx files inside exercise_1/data/
-
     path_A = "data/west0067/west0067.mtx"
-    path_B = "data/west0067/west0067.mtx"
+    path_B = "data/bcsstk01/bcsstk01.mtx"
 
     records = benchmark_sparse(path_A, path_B, num_workers=4)
     save_results(records)
