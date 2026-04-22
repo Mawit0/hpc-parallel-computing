@@ -19,29 +19,44 @@ def load_image(path):
     return tifffile.imread(path)
 
 
-def segment_cells(image):
+def load_model():
+    """
+    Load the Cellpose model once and return it for reuse.
+
+    Loading CellposeModel is expensive (1.15 GB CPSAM model). This
+    function should be called once per process and the returned model
+    object reused across all images to avoid repeated disk I/O and
+    model initialization overhead.
+
+    Returns:
+        cellpose.models.CellposeModel: Loaded model ready for inference.
+    """
+    return models.CellposeModel(gpu=False)
+
+
+def segment_cells(image, model):
     """
     Segment cells in a microscopy image using Cellpose.
 
-    Uses the pretrained 'cyto2' model which is optimized for
-    DIC microscopy images. Cellpose returns a label matrix where
-    each unique integer represents one detected cell.
+    Uses the pretrained CPSAM model (Cellpose 4 default) which is
+    optimized for DIC microscopy images. Cellpose returns a label matrix
+    where each unique integer represents one detected cell.
 
     Model settings:
-        - model: cyto2
+        - model: CPSAM (Cellpose 4 default)
         - diameter: None (auto-estimated per image)
         - channels: [0, 0] (grayscale input, no separate nuclear channel)
 
     Args:
         image (numpy.ndarray): Grayscale microscopy image.
+        model (cellpose.models.CellposeModel): Pre-loaded Cellpose model.
 
     Returns:
         numpy.ndarray: Label matrix of shape (H, W) where each cell
             has a unique integer label and background is 0.
     """
-    model = models.Cellpose(model_type="cyto2", gpu=False)
     # channels [0, 0] means grayscale image with no nuclear channel
-    masks, _, _, _ = model.eval(image, diameter=None, channels=[0, 0])
+    masks, _, _ = model.eval(image, diameter=None, channels=[0, 0])
     return masks
 
 
@@ -82,7 +97,7 @@ def measure_cells(masks, image_path):
     return records
 
 
-def process_image(image_path):
+def process_image(image_path, model):
     """
     Run the full serial pipeline on a single image.
 
@@ -91,12 +106,13 @@ def process_image(image_path):
 
     Args:
         image_path (str): Path to the .tif image file.
+        model (cellpose.models.CellposeModel): Pre-loaded Cellpose model.
 
     Returns:
         list[dict]: Measurement records for all detected cells.
     """
     image = load_image(image_path)
-    masks = segment_cells(image)
+    masks = segment_cells(image, model)
     records = measure_cells(masks, image_path)
     return records
 
@@ -118,26 +134,26 @@ def save_results(records, path="serial_results.csv"):
 
 
 if __name__ == "__main__":
-    # process the first sequence of images
     image_dir = "data/DIC-C2DH-HeLa/01"
-    image_paths = sorted([
+    all_paths = sorted([
         os.path.join(image_dir, f)
         for f in os.listdir(image_dir)
         if f.endswith(".tif")
     ])
+    image_paths = all_paths[:10]
 
-    print(f"Found {len(image_paths)} images in {image_dir}")
-    print(f"Image format: .tif")
-
-    # inspect first image metadata
+    print(f"Found {len(all_paths)} images in {image_dir} (processing first {len(image_paths)})")
     sample = tifffile.imread(image_paths[0])
-    print(f"Image shape: {sample.shape}")
-    print(f"Image dtype: {sample.dtype}")
+    print(f"Image shape: {sample.shape}  dtype: {sample.dtype}")
+
+    print("Loading Cellpose model...")
+    model = load_model()
+    print("Model loaded.\n")
 
     all_records = []
-    for path in image_paths:
-        print(f"Processing {os.path.basename(path)}...")
-        records = process_image(path)
+    for i, path in enumerate(image_paths):
+        print(f"Processing {i+1}/{len(image_paths)}: {os.path.basename(path)}...")
+        records = process_image(path, model)
         print(f"  Detected {len(records)} cells")
         all_records.extend(records)
 
