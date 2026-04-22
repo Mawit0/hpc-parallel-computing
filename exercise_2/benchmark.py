@@ -88,7 +88,7 @@ if __name__ == "__main__":
     print(f"Found {len(all_paths)} images (benchmarking first {len(image_paths)})\n")
 
     # test with increasing number of workers
-    workers_list = [2, 4, 8]
+    workers_list = [2, 4]
 
     records = benchmark(image_paths, workers_list)
     save_results(records)
