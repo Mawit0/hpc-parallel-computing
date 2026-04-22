@@ -1,0 +1,4 @@
+strategy,num_workers,num_images,time_seconds,speedup
+serial,1,10,1266.315158,1.0
+parallel,2,10,1241.728498,1.0198
+parallel,4,10,927.758995,1.3649

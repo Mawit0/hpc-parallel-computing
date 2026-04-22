@@ -1,0 +1,3 @@
+strategy,shape,time_seconds
+sparse_serial,"(67, 67)",0.000644
+sparse_parallel_rows,"(67, 67)",0.210693
