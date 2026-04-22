@@ -1,0 +1,15 @@
+*env-hpc/
+*.vscode
+.gitignore
+*__pycache__
+*.csv
+*.mtx
+data/
+.env
+CLAUDE.md
+.claude
+
+# Allow result CSVs
+!**/results.csv
+!**/*_results.csv
+!**/sparse_results.csv
