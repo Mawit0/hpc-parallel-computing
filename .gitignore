@@ -13,3 +13,8 @@ CLAUDE.md
 !**/results.csv
 !**/*_results.csv
 !**/sparse_results.csv
+
+# Allow assets
+!**/*.png
+!**/*.gif
+!docs/*.pdf
