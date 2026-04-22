@@ -35,7 +35,7 @@ The project is divided into four independent exercises. Each one includes a seri
 | `numpy` / `scipy` | Linear algebra, sparse matrices |
 | `mpi4py` | Distributed memory parallelism |
 | `multiprocessing` | Shared memory parallelism |
-| `cellpose` | Cell segmentation (cyto2 model) |
+| `cellpose` | Cell segmentation (CPSAM model, v4 default) |
 | `scikit-image` | Morphological descriptor extraction |
 | `scikit-learn` | Clustering metrics |
 | `matplotlib` / `imageio` | Visualization and animations |
@@ -78,6 +78,11 @@ hpc-parallel-computing/
 │   ├── benchmark.py
 │   └── analysis.ipynb
 ├── docs/
+│   ├── assets/
+│   │   ├── exercise_1/    # performance_dense.png, performance_sparse.png
+│   │   ├── exercise_2/    # performance_benchmark_ex2.png, cell_morphology.png
+│   │   ├── exercise_3/    # burn_progression.png, fire_spread_snapshots.png, performance_benchmark.png, fire_animation.gif
+│   │   └── exercise_4/    # kmeans_convergence.png, performance_kmeans.png
 │   └── report.pdf
 ├── requirements.txt
 └── README.md
@@ -210,7 +215,7 @@ mpirun -n 4 python benchmark.py
 ## Notes
 
 - Random seeds are fixed at 42 across all experiments for reproducibility.
-- Generated CSV files are excluded from version control via `.gitignore`.
+- Benchmark result CSV files (`*_results.csv`, `results.csv`) are tracked in version control. Raw dataset files remain gitignored.
 - Distributed scripts must be launched with `mpirun`. Running them directly with `python` executes as a single process.
 - Exercise 2 depends on Cellpose which requires significant CPU time. Running on a subset of images is acceptable for development.
 - The NASA FIRMS free tier allows 5000 transactions every 10 minutes.
