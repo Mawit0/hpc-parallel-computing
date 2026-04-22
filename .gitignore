@@ -1,6 +1,6 @@
 *env-hpc/
 *.vscode
-.gitignore
+*.gitignore
 *__pycache__
 *.csv
 *.mtx
